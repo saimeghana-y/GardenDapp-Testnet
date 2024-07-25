@@ -205,9 +205,11 @@ const Swap: React.FC<SwapAndAddressComponentProps> = ({ amount, changeAmount, di
       return;
     }
   
-    const sendAmount = direction === "WBTC_TO_BTC" ? Number(wbtcAmount) * 1e8 : Number(btcAmount) * 1e8;
-    const receiveAmount = direction === "WBTC_TO_BTC" ? Number(btcAmount) * 1e8 : Number(wbtcAmount) * 1e8;
-  
+    const sendAmount = direction === "WBTC_TO_BTC"
+    ? Number(wbtcAmount) * 1e8
+    : Number(btcAmount) * 1e8;
+
+  const receiveAmount = (1 - 0.3 / 100) * sendAmount;
     console.log(`Sending Amount: ${sendAmount}, Receiving Amount: ${receiveAmount}`);
     console.log(`Sending from: ${JSON.stringify(direction === "WBTC_TO_BTC" ? Assets.ethereum_sepolia.WBTC : Assets.bitcoin_testnet.BTC)}`);
     console.log(`Receiving at: ${JSON.stringify(direction === "WBTC_TO_BTC" ? Assets.bitcoin_testnet.BTC : Assets.ethereum_sepolia.WBTC)}`);
