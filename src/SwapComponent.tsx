@@ -14,7 +14,7 @@ const SwapComponent: React.FC = () => {
   });
   const [direction, setDirection] = useState<"BTC_TO_WBTC" | "WBTC_TO_BTC">("WBTC_TO_BTC");
 
-  const changeAmount = (of: "WBTC" | "BTC", value: string) => {
+  const changeAmount = (value: string) => {
     if (direction === "WBTC_TO_BTC") {
       handleWBTCChange(value);
     } else {
@@ -110,7 +110,7 @@ const SwapAmount: React.FC<TransactionAmountComponentProps> = ({ amount, changeA
   const { wbtcAmount, btcAmount } = amount;
 
   return (
-    <div className="swap-component-middle-section">
+    <div className="swap-component-middle-section" style={{ marginTop: "30px" }}>
       {direction === "WBTC_TO_BTC" ? (
         <>
           <InputField
@@ -170,6 +170,7 @@ type SwapAndAddressComponentProps = {
 const Swap: React.FC<SwapAndAddressComponentProps> = ({ amount, changeAmount, direction }) => {
   const { garden, bitcoin } = useGarden();
   const [btcAddress, setBtcAddress] = useState<string>();
+  const [ethAddress, setEthAddress] = useState<string>();
   const { metaMaskIsConnected } = useMetaMaskStore();
   const { wbtcAmount, btcAmount } = amount;
 
@@ -186,26 +187,46 @@ const Swap: React.FC<SwapAndAddressComponentProps> = ({ amount, changeAmount, di
     getAddress();
   }, [bitcoin, isSigned]);
 
-  const handleSwap = async () => {
-    if (
-      !garden ||
-      typeof Number(wbtcAmount) !== "number" ||
-      typeof Number(btcAmount) !== "number"
-    )
-      return;
+  useEffect(() => {
+    const getEthAddress = async () => {
+      if (metaMaskIsConnected) {
+        const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        setEthAddress(accounts[0]);
+      }
+    };
+    getEthAddress();
+  }, [metaMaskIsConnected]);
 
+  const handleSwap = async () => {
+    console.log('Swap button clicked');
+  
+    if (!garden || isNaN(Number(wbtcAmount)) || isNaN(Number(btcAmount))) {
+      console.log('Invalid garden or amounts');
+      return;
+    }
+  
     const sendAmount = direction === "WBTC_TO_BTC" ? Number(wbtcAmount) * 1e8 : Number(btcAmount) * 1e8;
     const receiveAmount = direction === "WBTC_TO_BTC" ? Number(btcAmount) * 1e8 : Number(wbtcAmount) * 1e8;
-
+  
+    console.log(`Sending Amount: ${sendAmount}, Receiving Amount: ${receiveAmount}`);
+    console.log(`Sending from: ${JSON.stringify(direction === "WBTC_TO_BTC" ? Assets.ethereum_sepolia.WBTC : Assets.bitcoin_testnet.BTC)}`);
+    console.log(`Receiving at: ${JSON.stringify(direction === "WBTC_TO_BTC" ? Assets.bitcoin_testnet.BTC : Assets.ethereum_sepolia.WBTC)}`);
+  
     changeAmount("WBTC", "");
-
-    await garden.swap(
-      direction === "WBTC_TO_BTC" ? Assets.ethereum_localnet.WBTC : Assets.bitcoin_regtest.BTC,
-      direction === "WBTC_TO_BTC" ? Assets.bitcoin_regtest.BTC : Assets.ethereum_localnet.WBTC,
-      sendAmount,
-      receiveAmount
-    );
+  
+    try {
+      await garden.swap(
+        direction === "WBTC_TO_BTC" ? Assets.ethereum_sepolia.WBTC : Assets.bitcoin_testnet.BTC,
+        direction === "WBTC_TO_BTC" ? Assets.bitcoin_testnet.BTC : Assets.ethereum_sepolia.WBTC,
+        sendAmount,
+        receiveAmount
+      );
+      console.log('Swap completed successfully');
+    } catch (error) {
+      console.error('Error during swap:', error);
+    }
   };
+  
 
   return (
     <div className="swap-component-bottom-section">
@@ -215,8 +236,13 @@ const Swap: React.FC<SwapAndAddressComponentProps> = ({ amount, changeAmount, di
           <input
             id="receive-address"
             placeholder="Enter Address"
-            value={btcAddress ? btcAddress : ""}
-            onChange={(e) => setBtcAddress(e.target.value)}
+            value={
+              direction === "BTC_TO_WBTC" 
+                ? ethAddress 
+                : btcAddress ? btcAddress : ""
+            }
+            readOnly={direction === "BTC_TO_WBTC"}
+            onChange={(e) => direction === "BTC_TO_WBTC" ? null : setBtcAddress(e.target.value)}
           />
         </div>
       </div>

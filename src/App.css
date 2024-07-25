@@ -1,15 +1,17 @@
 :root {
-  --primary-color: #09090b;
+  --primary-color: #98bdff;
   --secondary-color: #fafafa;
+  --button-color: #4b49ac;
   --primary-radius: 10px;
   --secondary-radius: 5px;
   --placeholder-color: #9a9a9d;
   --border-color: #27272a;
-  --light-text-color: #a1a1aa;
+  --light-text-color: #27272a;
   --font-size: 14px;
+  --white-color: #ffffff;
 
   font-family: "Inter", sans-serif;
-  color: #fafafa;
+  color: #27272a;
 }
 
 /* ------------ Button Start ------------ */
@@ -26,7 +28,7 @@ button {
   font-family: inherit;
   font-size: 13.25px;
   color: var(--secondary-color);
-  background-color: var(--primary-color);
+  background-color: var(--button-color);
   border: 1px solid var(--border-color);
   border-radius: var(--secondary-radius);
   padding: 10px 20px;
@@ -35,7 +37,7 @@ button {
 }
 
 .button-white {
-  background: var(--secondary-color);
+  background: var(--button-color);
   border: none;
   font-size: 14px;
   padding: 10px 20px;
@@ -112,7 +114,7 @@ label {
 /* ------------ Swap Component Start ------------ */
 
 .swap-component {
-  background-color: var(--primary-color);
+  background-color: var(--white-color);
   border: 1px solid var(--border-color);
   border-radius: var(--primary-radius);
   width: 30%;
@@ -197,7 +199,7 @@ hr {
 }
 
 .order {
-  background-color: var(--primary-color);
+  background-color: var(--white-color);
   border: 1px solid var(--border-color);
   border-radius: var(--primary-radius);
   padding-top: 17px;
