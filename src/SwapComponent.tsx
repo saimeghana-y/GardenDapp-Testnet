@@ -14,10 +14,10 @@ const SwapComponent: React.FC = () => {
   });
   const [direction, setDirection] = useState<"BTC_TO_WBTC" | "WBTC_TO_BTC">("WBTC_TO_BTC");
 
-  const changeAmount = (value: string) => {
-    if (direction === "WBTC_TO_BTC") {
+  const changeAmount = (of: "WBTC" | "BTC", value: string) => {
+    if (of === "WBTC") {
       handleWBTCChange(value);
-    } else {
+    } else if (of === "BTC") {
       handleBTCChange(value);
     }
   };
